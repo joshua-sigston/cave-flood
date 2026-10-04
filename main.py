@@ -1,3 +1,11 @@
+import random
+
+DIRECTIONS = [
+    (-1, 0),
+    (0, -1), (0, 1),
+    (1, 0),
+]
+
 class Cell:
     def __init__(self, row, col):
         self.row = row
@@ -47,9 +55,19 @@ class Board:
 
         self.grid = grid
 
-    def place_rocks(self, row, col):
+    def place_rocks(self):
+        r = self.rows
+        c = self.cols
+        #  create a maximum number of rocks to place on the grid
+        max_rocks = (r * c * 40) // 100
+        number_of_rocks = random.randint(0, max_rocks)
+        # list of every (row, col) coordinate on the board
+        spots = [(row, col) for row in range(r) for col in range(c)]
+        # print(spots)
+        # pick that many unique spots at random so rocks do not overlap
+        for row, col in random.sample(spots, number_of_rocks):
         # places a rock at the coordinates in the grid
-        self.grid[row][col] = Rock(row, col)
+            self.grid[row][col] = Rock(row, col)
 
     def print_board(self):
         print(" ", end=" ")
@@ -75,10 +93,26 @@ class Board:
         self.grid[row][col].toggle()
         self.print_board()
 
+    def get_neighbors(self, row, col):
+        neighbors = []
+        # for dr, dc means (dr, dc)
+        for dr, dc in DIRECTIONS:
+            # adds dr to row
+            nr = row + dr
+            # add dc to col
+            nc = col + dc
+            if self.in_bounds(nr, nc):
+                neighbors.append((nr, nc))
+        print(neighbors)
+        return neighbors
+
 
 def game():
 
-    b = Board(5, 5)
+    b = Board(9, 9)
+    b.place_rocks()
+    b.get_neighbors(2, 2)
     b.print_board()
+    
 
 game()
