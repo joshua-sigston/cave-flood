@@ -10,6 +10,7 @@ class Cell:
     def __init__(self, row, col):
         self.row = row
         self.col = col
+        self.rock_count = 0
 
     def __repr__(self):
         return f"Cell({self.row}, {self.col})"
@@ -40,6 +41,8 @@ class Board:
         self.rows = rows
         self.cols = cols
         self.create_grid()
+        self.num_of_rocks = 0
+
 
     # create grid
     def create_grid(self):
@@ -60,14 +63,15 @@ class Board:
         c = self.cols
         #  create a maximum number of rocks to place on the grid
         max_rocks = (r * c * 40) // 100
-        number_of_rocks = random.randint(0, max_rocks)
+        number_of_rocks_to_place = random.randint(0, max_rocks)
         # list of every (row, col) coordinate on the board
         spots = [(row, col) for row in range(r) for col in range(c)]
         # print(spots)
         # pick that many unique spots at random so rocks do not overlap
-        for row, col in random.sample(spots, number_of_rocks):
+        for row, col in random.sample(spots, number_of_rocks_to_place):
         # places a rock at the coordinates in the grid
             self.grid[row][col] = Rock(row, col)
+        return number_of_rocks_to_place
 
     def print_board(self):
         print(" ", end=" ")
@@ -103,15 +107,24 @@ class Board:
             nc = col + dc
             if self.in_bounds(nr, nc):
                 neighbors.append((nr, nc))
-        print(neighbors)
+        # print(neighbors)
         return neighbors
+
+    def count_adjacent_rocks(self, row, col):
+        n = self.get_neighbors(row, col)
+        for row, col in n:
+            cell = self.grid[row][col]
+            if isinstance(cell, Rock):
+                self.num_of_rocks += 1
+        return self.num_of_rocks
 
 
 def game():
 
     b = Board(9, 9)
     b.place_rocks()
-    b.get_neighbors(2, 2)
+    # print("num of adjacent rocks", b.count_adjacent_rocks(2, 2))
+    print("num of rocks on the board", b.place_rocks())
     b.print_board()
     
 
